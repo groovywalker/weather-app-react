@@ -1,0 +1,104 @@
+class Headline extends React.Component {
+  render() {
+    return (
+      <div className='jumbotron text-center'>
+        <h1 className='display-3' id='headline-box'>Weather App</h1>
+        <h5 className='' id='weather'></h5>
+      </div>
+    );
+  }
+}
+
+class Buttons extends React.Component {
+  render() {
+    return (
+      <div className='row text-center'>
+        <button className='col-sm-4 btn btn-outline-info geo'>Change To Fahrenheit</button>
+        <button className='col-sm-4 btn btn-outline-primary geo'>Use Your Location</button>
+        <button className="col-sm-4 btn btn-outline-info altUnits">Change To Celsius</button>
+      </div>
+    );
+  }
+}
+
+class App extends React.Component {
+  render() {
+    return (
+      <div className='container'>
+        <Headline />
+        <Buttons />
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('root')
+);
+
+
+// if ('geolocation' in navigator) {
+//   $('.geo').show();
+// } else {
+//   $('.geo').hide();
+// }
+
+// $('.geo').on('click', function() {
+//   navigator.geolocation.getCurrentPosition(function(position) {
+//     getWeather(position.coords.latitude+','+position.coords.longitude, '', 'f');
+//   });
+// });
+
+// $('.altUnits').on('click', function() {
+//   navigator.geolocation.getCurrentPosition(function(position) {
+//     getWeather(position.coords.latitude+','+position.coords.longitude, '', 'c');
+//   });
+// });
+
+
+
+$(document).ready(function() {
+
+  if ('geolocation' in navigator) {
+    $('.geo').show();
+  } else {
+    $('.geo').hide();
+  }
+
+  $('.geo').on('click', function() {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      getWeather(position.coords.latitude+','+position.coords.longitude, '', 'f');
+    });
+  });
+
+  $('.altUnits').on('click', function() {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      getWeather(position.coords.latitude+','+position.coords.longitude, '', 'c');
+    });
+  });  
+
+
+  //  getWeather('Colton', '', 'f'); //Get the initial weather for testing.
+  setInterval(getWeather, 600000);  //Update the weather every 10 minutes.
+  
+});
+
+function getWeather(location, woeid, units) {
+  $.simpleWeather({
+    location: location,
+    woeid: woeid,
+    unit: units,
+    success: function(weather) {
+      html = '<p>' + '<img src="' + weather.thumbnail + '">' + weather.temp + '&deg;' +  weather.units.temp + '</p>';
+      html += '<p>' + weather.city + ', ' + weather.region + '</p>';
+      html += '<p>' + weather.currently + '</p>';
+      html += '<p>' + weather.wind.direction + ' ' + weather.wind.speed + ' ' + weather.units.speed + '</p>';
+
+      $("#weather").html(html);
+    },
+    error: function(error) {
+      $("#weather").html('<p>' + error + '</p>');
+    }
+  });
+}
